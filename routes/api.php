@@ -7,16 +7,17 @@ use Laravel\Spark\Repositories\StripeCouponRepository;
 use Laravel\Spark\Spark;
 use Stripe\Coupon as StripeCoupon;
 
-function applyCoupon(Request $request, Model $model)
-{
-    $request->validate([
+if (! function_exists('applyCoupon')) {
+    function applyCoupon(Request $request, Model $model)
+    {
+        $request->validate([
         'type'     => 'required|in:amount,percent',
         'value'    => 'required|integer',
         'duration' => 'required|in:once,forever,repeating',
         'months'   => 'required_if:duration,repeating',
     ]);
 
-    $coupon = StripeCoupon::create([
+        $coupon = StripeCoupon::create([
         'currency'           => config('cashier.currency'),
         'amount_off'         => $request->type === 'amount' ? $request->value * 100 : null,
         'percent_off'        => $request->type === 'percent' ? $request->value : null,
@@ -25,16 +26,19 @@ function applyCoupon(Request $request, Model $model)
         'max_redemptions'    => 1,
     ], config('cashier.secret'));
 
-    $model->applyCoupon($coupon->id);
+        $model->applyCoupon($coupon->id);
+    }
 }
 
-function currentCoupon(Model $model)
-{
-    $coupon = resolve(StripeCouponRepository::class)->forBillable($model);
+if (! function_exists('currentCoupon')) {
+    function currentCoupon(Model $model)
+    {
+        $coupon = resolve(StripeCouponRepository::class)->forBillable($model);
 
-    abort_unless($coupon, 204);
+        abort_unless($coupon, 204);
 
-    return $coupon->toArray();
+        return $coupon->toArray();
+    }
 }
 
 /*

@@ -7,7 +7,7 @@ use Laravel\Spark\Repositories\StripeCouponRepository;
 use Laravel\Spark\Spark;
 use Stripe\Coupon as StripeCoupon;
 
-if (! function_exists('applyCoupon')) {
+if (!function_exists('applyCoupon')) {
     function applyCoupon(Request $request, Model $model)
     {
         $request->validate([
@@ -30,7 +30,7 @@ if (! function_exists('applyCoupon')) {
     }
 }
 
-if (! function_exists('currentCoupon')) {
+if (!function_exists('currentCoupon')) {
     function currentCoupon(Model $model)
     {
         $coupon = resolve(StripeCouponRepository::class)->forBillable($model);
